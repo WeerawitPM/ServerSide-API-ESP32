@@ -3,8 +3,6 @@ const ValuesSchema = new mongoose.Schema({
     Temperature_C : {},
     Temperature_F : {},
     Humadity: {},
-    MaxTemperature_C : {},
-    MaxHumadity: {},
 },
 {
     timestamps:true

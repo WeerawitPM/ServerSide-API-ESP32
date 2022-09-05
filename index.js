@@ -27,6 +27,14 @@ const GetData = async(req,res)=>{
     }catch (error) { res.json({Message:"Error",error})}
 }
 
+const FindData = async(req,res)=>{
+    let _id = req.params.id
+    try {
+        const data = await ValuesModel.findById(_id)
+        res.json({Message:"Data Found",data})
+    }catch (error) { res.json({Message:"Error",error})}
+}
+
 const AddData = async(req,res)=>{
     let {Temperature_C2,Humadity2} = req.body
     let Temperature_F = 1.8*Temperature_C2+32
@@ -56,9 +64,32 @@ const AddData_Query = async(req,res)=>{
     }catch (error) {res.json({Message:"Error",error})}
 }
 
+const DeleteData = async(req,res)=>{
+    let _id = req.params.id
+    try {
+        const data = await ValuesModel.findByIdAndDelete(_id)
+        res.json({Message:"Data Deleted Success",data})
+    }catch (error) {res.json({Message:"Error",error})}
+}
+
+const UpdateData = async(req,res)=>{
+    let _id = req.params.id
+    let {Temperature_C2,Humadity2} = req.body
+    let Temperature_F = 1.8*Temperature_C2+32
+    var Temperature_C = Number(Temperature_C2)
+    var Humadity = Number(Humadity2)
+    try {
+        const data = await ValuesModel.findByIdAndUpdate(_id,{Temperature_C,Temperature_F,Humadity})
+        res.json({Message:"Data Updated Success",data})
+    }catch (error) {res.json({Message:"Error",error})}
+}
+
 //......................... APIs ........................
-app.get("/",GetData)
 app.post("/",AddData)  // Adding data through post metheod & body
+app.get("/",GetData)
+app.get("/:id",FindData)
 app.get("/add",AddData_Query) // Adding data through get method & query
+app.delete("/:id",DeleteData)
+app.put("/:id",UpdateData)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
