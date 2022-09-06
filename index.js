@@ -36,14 +36,12 @@ const FindData = async(req,res)=>{
 }
 
 const AddData = async(req,res)=>{
-    let {Temperature_C2,Humadity2} = req.body
-    let Temperature_F = 1.8*Temperature_C2+32
-    var Temperature_C = Number(Temperature_C2)
-    var Humadity = Number(Humadity2)
+    let {Temperature_C, Temperature_F, Humadity,} = req.body
+
     try {
         // console.log(typeof Temperature_C)
         // console.log(typeof Humadity)
-        const data = new ValuesModel({Temperature_C,Temperature_F,Humadity})
+        const data = new ValuesModel(req.body)
         await data.save()
         res.json({Message:"Data Added Success",data})
     }catch (error) {res.json({Message:"Error",error})}
