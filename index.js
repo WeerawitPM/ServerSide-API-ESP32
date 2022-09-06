@@ -74,10 +74,7 @@ const DeleteData = async(req,res)=>{
 
 const UpdateData = async(req,res)=>{
     let _id = req.params.id
-    let {Temperature_C2,Humadity2} = req.body
-    let Temperature_F = 1.8*Temperature_C2+32
-    var Temperature_C = Number(Temperature_C2)
-    var Humadity = Number(Humadity2)
+    let {Temperature_C,Temperature_F,Humadity} = req.body
     try {
         const data = await ValuesModel.findByIdAndUpdate(_id,{Temperature_C,Temperature_F,Humadity})
         res.json({Message:"Data Updated Success",data})
@@ -87,9 +84,9 @@ const UpdateData = async(req,res)=>{
 //......................... APIs ........................
 app.post("/",AddData)  // Adding data through post metheod & body
 app.get("/",GetData)
-app.get("/:id",FindData)
+app.get("/find/:id",FindData)
 app.get("/add",AddData_Query) // Adding data through get method & query
-app.delete("/:id",DeleteData)
-app.put("/:id",UpdateData)
+app.delete("/delete/:id",DeleteData)
+app.put("/update/:id",UpdateData)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
