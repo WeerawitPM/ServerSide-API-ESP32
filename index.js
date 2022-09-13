@@ -56,13 +56,21 @@ const AddData_Query = async (req, res) => {
     var Temperature_F = Number(Temperature_F2)
     var Humadity = Number(Humadity2)
 
-    let Day = req.query.aa
-    let Date = req.query.bb
-    let Month = req.query.cc
-    let Year = req.query.dd
-    let Time_Hours = req.query.ee
-    let Time_Minutes = req.query.ff
-    let Time_Seconds = req.query.gg
+    let Day2 = req.query.aa
+    let Date2 = req.query.bb
+    let Month2 = req.query.cc
+    let Year2 = req.query.dd
+    let Time_Hours2 = req.query.ee
+    let Time_Minutes2 = req.query.ff
+    let Time_Seconds2 = req.query.gg
+
+    var Day = String(Day2)
+    var Date = Number(Date2)
+    var Month = Number(Month2)
+    var Year = Number(Year2)
+    var Time_Hours = Number(Time_Hours2)
+    var Time_Minutes = Number(Time_Minutes2)
+    var Time_Seconds = Number(Time_Seconds2)
 
     try {
         // console.log(typeof Temperature_C)
