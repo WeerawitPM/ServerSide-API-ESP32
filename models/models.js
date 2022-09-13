@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const ValuesSchema = new mongoose.Schema({
+    Board_id: {},
     Temperature_C: {},
     Temperature_F: {},
     Humadity: {},

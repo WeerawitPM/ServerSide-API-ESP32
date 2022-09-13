@@ -48,6 +48,8 @@ const AddData = async (req, res) => {
 }
 
 const AddData_Query = async (req, res) => {
+    let Board_id = req.query.bi
+
     let Temperature_C2 = req.query.temp
     let Temperature_F2 = req.query.tempf
     let Humadity2 = req.query.hum
@@ -75,7 +77,7 @@ const AddData_Query = async (req, res) => {
     try {
         // console.log(typeof Temperature_C)
         // console.log(typeof Humadity)
-        const data = new ValuesModel({ Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
+        const data = new ValuesModel({ Board_id, Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
         await data.save()
         res.json({ Message: "Temp Added Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
@@ -93,7 +95,7 @@ const UpdateData = async (req, res) => {
     let _id = req.params.id
     let { Temperature_C, Temperature_F, Humadity } = req.body
     try {
-        const data = await ValuesModel.findByIdAndUpdate(_id, { Temperature_C, Temperature_F, Humadity })
+        const data = await ValuesModel.findByIdAndUpdate(_id, { Board_id, Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
         res.json({ Message: "Data Updated Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
