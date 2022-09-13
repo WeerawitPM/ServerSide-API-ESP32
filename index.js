@@ -56,7 +56,7 @@ const AddData_Query = async (req, res) => {
     var Temperature_F = Number(Temperature_F2)
     var Humadity = Number(Humadity2)
 
-    let Day2 = req.query.aa
+    let Day = req.query.aa
     let Date2 = req.query.bb
     let Month2 = req.query.cc
     let Year2 = req.query.dd
@@ -64,7 +64,7 @@ const AddData_Query = async (req, res) => {
     let Time_Minutes2 = req.query.ff
     let Time_Seconds2 = req.query.gg
 
-    var Day = String(Day2)
+    // var Day = String(Day2)
     var Date = Number(Date2)
     var Month = Number(Month2)
     var Year = Number(Year2)
