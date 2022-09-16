@@ -24,6 +24,7 @@ const GetData = async (req, res) => {
         const data = await ValuesModel.find()
         // res.json({Message:"All Data",data})
         res.json(data)
+        res.send("Hello")
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
