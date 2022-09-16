@@ -22,9 +22,8 @@ DBConnection()
 const GetData = async (req, res) => {
     try {
         const data = await ValuesModel.find()
-        // res.json({Message:"All Data",data})
-        res.json(data)
-        res.send("Hello")
+        res.json({Message:"All Data",data})
+        // res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
