@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const ValuesModel = require('./models/models');
-const app = express()
+const app = express();
+
 require('dotenv').config();
 const port = process.env.PORT || 5000
 
-app.use(express.json())
+var cors = require('cors');
+app.use(cors());
 
 // .................... DB Config .......................
 const DBConnection = () => {
@@ -22,8 +24,7 @@ DBConnection()
 const GetData = async (req, res) => {
     try {
         const data = await ValuesModel.find()
-        res.json({Message:"All Data",data})
-        // res.json(data)
+        res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
