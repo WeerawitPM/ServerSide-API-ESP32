@@ -101,6 +101,56 @@ const UpdateData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
+const MeanTemperatureToday = async (req, res) => {
+    try {
+        const data = await ValuesModel.find()
+        let mean = 0
+        data.map((item) => {
+            mean += item.Temperature_C
+        })
+        mean = mean / data.length
+        res.json({ Message: "Mean Temperature Today", mean })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const GetWeekData = async (req, res) => {
+    let TodayDate = req.params.date
+    let TodayMonth = req.params.month
+    let TodayYear = req.params.year
+
+    try {
+        const data = await ValuesModel.find()
+        let today = []
+        let today2 = []
+        let meanTemp = 0
+        let meanHum = 0
+
+        data.map((item) => {
+            if (item.Date == TodayDate && item.Month == TodayMonth && item.Year == TodayYear) {
+                today.push(item)
+            }
+        })
+        today.map((item) => {
+            day = item.Day
+            meanTemp += item.Temperature_C
+            meanHum += item.Humadity
+        })
+        meanTemp = meanTemp / today.length
+        meanHum = meanHum / today.length
+
+        today2.push({ Today: day, MeanTemp: Number(meanTemp.toFixed(2)), MeanHum: Number(meanHum.toFixed(2)) })
+        today2.push({ Today: "TuesDay", MeanTemp: 25, MeanHum: 60 })
+        today2.push({ Today: "Wednesday", MeanTemp: 26, MeanHum: 61 })
+        today2.push({ Today: "Thursday", MeanTemp: 27, MeanHum: 62 })
+        today2.push({ Today: "Friday", MeanTemp: 28, MeanHum: 63 })
+        today2.push({ Today: "Saturday", MeanTemp: 29, MeanHum: 64 })
+        today2.push({ Today: "Sunday", MeanTemp: 30, MeanHum: 65 })
+
+        // res.json({ Message: "Today Data", today })
+        res.json(today2)
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
 //......................... APIs ........................
 app.post("/", AddData)  // Adding data through post metheod & body
 app.get("/", GetData)
@@ -108,5 +158,7 @@ app.get("/find/:id", FindData)
 app.get("/add", AddData_Query) // Adding data through get method & query
 app.delete("/delete/:id", DeleteData)
 app.put("/update/:id", UpdateData)
+app.get("/mean", MeanTemperatureToday)
+app.get("/week/:date/:month/:year", GetWeekData)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
