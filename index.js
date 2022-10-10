@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const ValuesModel = require('./models/model_data');
-const ESP32Model = require('./models/model_esp32');
 const app = express();
 
 require('dotenv').config();
