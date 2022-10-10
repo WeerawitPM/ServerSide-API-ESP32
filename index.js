@@ -23,6 +23,8 @@ const DBConnection = () => {
 DBConnection()
 
 //................... Controllers .........................
+
+//................... Get .........................
 const GetData = async (req, res) => {
     try {
         const data = await ValuesModel.find()
@@ -30,19 +32,11 @@ const GetData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const FindData = async (req, res) => {
-    let _id = req.params.id
+const FindBoardData = async (req, res) => {
+    let Board_id = req.params.id
     try {
-        const data = await ValuesModel.findById(_id)
+        const data = await ValuesModel.find({ Board_id })
         res.json({ Message: "Data Found", data })
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const AddData = async (req, res) => {
-    try {
-        const data = new ValuesModel(req.body)
-        await data.save()
-        res.json({ Message: "Temp Added Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
@@ -82,70 +76,12 @@ const AddData_Query = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const DeleteData = async (req, res) => {
-    let _id = req.params.id
+//................... Post .........................
+const AddData = async (req, res) => {
     try {
-        const data = await ValuesModel.findByIdAndDelete(_id)
-        res.json({ Message: "Data Deleted Success", data })
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const UpdateData = async (req, res) => {
-    let _id = req.params.id
-    let { Temperature_C, Temperature_F, Humadity } = req.body
-    try {
-        const data = await ValuesModel.findByIdAndUpdate(_id, { Board_id, Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
-        res.json({ Message: "Data Updated Success", data })
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const MeanTemperatureToday = async (req, res) => {
-    try {
-        const data = await ValuesModel.find()
-        let mean = 0
-        data.map((item) => {
-            mean += item.Temperature_C
-        })
-        mean = mean / data.length
-        res.json({ Message: "Mean Temperature Today", mean })
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const GetWeekData = async (req, res) => {
-    let TodayDate = req.params.date
-    let TodayMonth = req.params.month
-    let TodayYear = req.params.year
-
-    try {
-        const data = await ValuesModel.find()
-        let today = []
-        let today2 = []
-        let meanTemp = 0
-        let meanHum = 0
-
-        data.map((item) => {
-            if (item.Date == TodayDate && item.Month == TodayMonth && item.Year == TodayYear) {
-                today.push(item)
-            }
-        })
-        today.map((item) => {
-            day = item.Day
-            meanTemp += item.Temperature_C
-            meanHum += item.Humadity
-        })
-        meanTemp = meanTemp / today.length
-        meanHum = meanHum / today.length
-
-        today2.push({ Today: day, MeanTemp: Number(meanTemp.toFixed(2)), MeanHum: Number(meanHum.toFixed(2)) })
-        today2.push({ Today: "TuesDay", MeanTemp: 25, MeanHum: 60 })
-        today2.push({ Today: "Wednesday", MeanTemp: 26, MeanHum: 61 })
-        today2.push({ Today: "Thursday", MeanTemp: 27, MeanHum: 62 })
-        today2.push({ Today: "Friday", MeanTemp: 28, MeanHum: 63 })
-        today2.push({ Today: "Saturday", MeanTemp: 29, MeanHum: 64 })
-        today2.push({ Today: "Sunday", MeanTemp: 30, MeanHum: 65 })
-
-        // res.json({ Message: "Today Data", today })
-        res.json(today2)
+        const data = new ValuesModel(req.body)
+        await data.save()
+        res.json({ Message: "Temp Added Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
@@ -172,21 +108,7 @@ const EnrollBoard = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const GetAllBoard = async (req, res) => {
-    try {
-        const data = await ESP32Model.find()
-        res.json(data)
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const FindBoardData = async (req, res) => {
-    let Board_id = req.params.id
-    try {
-        const data = await ValuesModel.find({ Board_id })
-        res.json({ Message: "Data Found", data })
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
+//................... Put .........................
 const AddMeasurements = async (req, res) => {
     let Board_id = req.params.id
     let { Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds } = req.body
@@ -212,19 +134,38 @@ const AddMeasurements = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
+//................... Delete .........................
+const DeleteData = async (req, res) => {
+    let _id = req.params.id
+    try {
+        const data = await ValuesModel.findByIdAndDelete(_id)
+        res.json({ Message: "Data Deleted Success", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+//................... EndControllers .........................
+
 //......................... APIs ........................
-app.post("/", AddData)  // Adding data through post metheod & body
+
+//......................... Get .........................
+
 app.get("/", GetData)
-app.get("/find/:id", FindData)
 app.get("/add", AddData_Query) // Adding data through get method & query
-app.delete("/delete/:id", DeleteData)
-app.put("/update/:id", UpdateData)
-app.get("/mean", MeanTemperatureToday)
-app.get("/week/:date/:month/:year", GetWeekData)
-app.post("/enroll", EnrollBoard)
-app.get("/allboard", GetAllBoard)
 app.get("/boarddata/:id", FindBoardData)
 
+//......................... Post ........................
+
+app.post("/", AddData)  // Adding data through post metheod & body
+app.post("/enroll", EnrollBoard)
+
+//......................... Put .........................
+
 app.put("/addmeasurements/:id", AddMeasurements)
+
+//......................... Delete ......................
+
+app.delete("/delete/:id", DeleteData)
+
+//......................... EndAPIs ........................
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
