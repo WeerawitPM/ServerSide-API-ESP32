@@ -1,13 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const ValuesModel = require('./models/models');
+const ValuesModel = require('./models/model_data');
+const ESP32Model = require('./models/model_esp32');
 const app = express();
 
 require('dotenv').config();
 const port = process.env.PORT || 5000
 
 var cors = require('cors');
-app.use(cors());
+
+app.use(express.json(), cors()) // for parsing application/json);
 
 // .................... DB Config .......................
 const DBConnection = () => {
@@ -37,14 +39,10 @@ const FindData = async (req, res) => {
 }
 
 const AddData = async (req, res) => {
-    let { Temperature_C, Temperature_F, Humadity, } = req.body
-
     try {
-        // console.log(typeof Temperature_C)
-        // console.log(typeof Humadity)
         const data = new ValuesModel(req.body)
         await data.save()
-        res.json({ Message: "Data Added Success", data })
+        res.json({ Message: "Temp Added Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
@@ -151,6 +149,69 @@ const GetWeekData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
+const EnrollBoard = async (req, res) => {
+    let { Board_id, Board_location } = req.body
+
+    try {
+        let Board_id2 = ""
+        const data = await ValuesModel.find({ Board_id })
+
+        data.map((item) => {
+            Board_id2 = item.Board_id
+        })
+
+        if (Board_id2 == Board_id) {
+            res.json({ Message: "Board Already Enrolled" })
+        }
+        else {
+            const data2 = new ValuesModel({ Board_id, Board_location })
+            data2.save()
+            res.json({ Message: "Board Enrolled Success", data2 })
+        }
+
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const GetAllBoard = async (req, res) => {
+    try {
+        const data = await ESP32Model.find()
+        res.json(data)
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const FindBoardData = async (req, res) => {
+    let Board_id = req.params.id
+    try {
+        const data = await ValuesModel.find({ Board_id })
+        res.json({ Message: "Data Found", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const AddMeasurements = async (req, res) => {
+    let Board_id = req.params.id
+    let { Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds } = req.body
+    try {
+        const data = await ValuesModel.find({ Board_id })
+
+        let board_id = ""
+        let Measurements = []
+
+        data.map((item) => {
+            board_id = item.Board_id
+            Measurements = item.Measurements
+        })
+
+        if (board_id == Board_id) {
+            Measurements.push({ Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
+            const data2 = await ValuesModel.findOneAndUpdate({ Board_id }, { Measurements })
+            res.json({ Message: "Measurements Added Success", data2 })
+        }
+        else {
+            res.json({ Message: "Board Not Found" })
+        }
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
 //......................... APIs ........................
 app.post("/", AddData)  // Adding data through post metheod & body
 app.get("/", GetData)
@@ -160,5 +221,10 @@ app.delete("/delete/:id", DeleteData)
 app.put("/update/:id", UpdateData)
 app.get("/mean", MeanTemperatureToday)
 app.get("/week/:date/:month/:year", GetWeekData)
+app.post("/enroll", EnrollBoard)
+app.get("/allboard", GetAllBoard)
+app.get("/boarddata/:id", FindBoardData)
+
+app.put("/addmeasurements/:id", AddMeasurements)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
