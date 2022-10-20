@@ -14,6 +14,7 @@ const ValuesSchema = new mongoose.Schema({
             Time_Hours: {},
             Time_Minutes: {},
             Time_Seconds: {},
+            DateTime: {},
             timestamp: { type: Date, default: Date.now }
         }
     ],

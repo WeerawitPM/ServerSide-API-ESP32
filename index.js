@@ -33,9 +33,15 @@ const GetData = async (req, res) => {
 
 const FindBoardData = async (req, res) => {
     let Board_id = req.params.id
+    let Measurements = {}
     try {
         const data = await ValuesModel.find({ Board_id })
-        res.json({ Message: "Data Found", data })
+
+        data.map((item) => {
+            Measurements = item.Measurements
+        })
+
+        res.json({ Measurements })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
@@ -111,6 +117,8 @@ const EnrollBoard = async (req, res) => {
 const AddMeasurements = async (req, res) => {
     let Board_id = req.params.id
     let { Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds } = req.body
+    let DateTime = "Date:" + Date + "/" + Month + "/" + Year + " Time:" + Time_Hours + ":" + Time_Minutes + ":" + Time_Seconds
+
     try {
         const data = await ValuesModel.find({ Board_id })
 
@@ -123,7 +131,7 @@ const AddMeasurements = async (req, res) => {
         })
 
         if (board_id == Board_id) {
-            Measurements.push({ Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds })
+            Measurements.push({ Temperature_C, Temperature_F, Humadity, Day, Date, Month, Year, Time_Hours, Time_Minutes, Time_Seconds, DateTime })
             const data2 = await ValuesModel.findOneAndUpdate({ Board_id }, { Measurements })
             res.json({ Message: "Measurements Added Success", data2 })
         }
@@ -139,6 +147,14 @@ const DeleteData = async (req, res) => {
     try {
         const data = await ValuesModel.findByIdAndDelete(_id)
         res.json({ Message: "Data Deleted Success", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const DeleteBoard = async (req, res) => {
+    let Board_id = req.params.id
+    try {
+        const data = await ValuesModel.findOneAndDelete({ Board_id })
+        res.json({ Message: "Board Deleted Success", data })
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
@@ -164,6 +180,7 @@ app.put("/addmeasurements/:id", AddMeasurements)
 //......................... Delete ......................
 
 app.delete("/delete/:id", DeleteData)
+app.delete("/deleteboard/:id", DeleteBoard)
 
 //......................... EndAPIs ........................
 
