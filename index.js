@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000
 
 var cors = require('cors');
 
-app.use(cors()) // for parsing application/json);
+app.use(express.json(), cors()) // for parsing application/json);
 
 // .................... DB Config .......................
 const DBConnection = () => {
