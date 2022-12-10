@@ -55,7 +55,7 @@ const GetTodayData = async (req, res) => {
 }
 
 const GetAvgDataToday = async (req, res) => {
-    today = moment().format('DD-MM-YYYY');
+    today = moment().add(-1, "days").format('DD-MM-YYYY');
     try {
         const data = await ValuesModel.aggregate([
             {
@@ -85,7 +85,7 @@ const GetWeekData = async (req, res) => {
     try {
         const data1 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: today } }
             },
             {
                 $group: {
@@ -98,7 +98,7 @@ const GetWeekData = async (req, res) => {
 
         const data2 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday1 } }
             },
             {
                 $group: {
@@ -110,7 +110,7 @@ const GetWeekData = async (req, res) => {
         ])
         const data3 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday2 } }
             },
             {
                 $group: {
@@ -122,7 +122,7 @@ const GetWeekData = async (req, res) => {
         ])
         const data4 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday3 } }
             },
             {
                 $group: {
@@ -134,7 +134,7 @@ const GetWeekData = async (req, res) => {
         ])
         const data5 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday4 } }
             },
             {
                 $group: {
@@ -146,7 +146,7 @@ const GetWeekData = async (req, res) => {
         ])
         const data6 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday5 } }
             },
             {
                 $group: {
@@ -158,7 +158,7 @@ const GetWeekData = async (req, res) => {
         ])
         const data7 = await ValuesModel.aggregate([
             {
-                $match: { AllDateTime2: { $gte: today } }
+                $match: { AllDateTime2: { $lte: yesterday6 } }
             },
             {
                 $group: {
@@ -168,7 +168,8 @@ const GetWeekData = async (req, res) => {
                 }
             }
         ])
-        res.json(data1)
+        data = [data7, data6, data5, data4, data3, data2, data1]
+        res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
