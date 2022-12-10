@@ -93,6 +93,14 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: today
+                }
             }
         ])
 
@@ -106,8 +114,17 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: yesterday1
+                }
             }
         ])
+
         const data3 = await ValuesModel.aggregate([
             {
                 $match: { AllDateTime2: { $lte: yesterday2 } }
@@ -118,8 +135,17 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: yesterday2
+                }
             }
         ])
+
         const data4 = await ValuesModel.aggregate([
             {
                 $match: { AllDateTime2: { $lte: yesterday3 } }
@@ -130,8 +156,17 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: yesterday3
+                }
             }
         ])
+
         const data5 = await ValuesModel.aggregate([
             {
                 $match: { AllDateTime2: { $lte: yesterday4 } }
@@ -142,8 +177,17 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: { $avg: "$Temperature_C" },
+                    Humadity: { $avg: "$Humadity" },
+                    Date: yesterday4
+                }
             }
         ])
+
         const data6 = await ValuesModel.aggregate([
             {
                 $match: { AllDateTime2: { $lte: yesterday5 } }
@@ -154,8 +198,17 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: yesterday5
+                }
             }
         ])
+
         const data7 = await ValuesModel.aggregate([
             {
                 $match: { AllDateTime2: { $lte: yesterday6 } }
@@ -166,9 +219,39 @@ const GetWeekData = async (req, res) => {
                     Temperature_C: { $avg: "$Temperature_C" },
                     Humadity: { $avg: "$Humadity" }
                 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    Temperature_C: 1,
+                    Humadity: 1,
+                    Date: yesterday6
+                }
             }
         ])
-        data = [data7, data6, data5, data4, data3, data2, data1]
+
+        data7.map((item) => {
+            data.push(item)
+        })
+        data6.map((item) => {
+            data.push(item)
+        })
+        data5.map((item) => {
+            data.push(item)
+        })
+        data4.map((item) => {
+            data.push(item)
+        })
+        data3.map((item) => {
+            data.push(item)
+        })
+        data2.map((item) => {
+            data.push(item)
+        })
+        data1.map((item) => {
+            data.push(item)
+        })
+
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
