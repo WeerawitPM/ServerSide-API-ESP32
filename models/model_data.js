@@ -17,6 +17,12 @@ const ValuesSchema = new mongoose.Schema({
             return this.Day + " " + this.Date + " " + this.Month + " " + this.Year + " " + this.Time_Hours + ":" + this.Time_Minutes + ":" + this.Time_Seconds
         }
     },
+    AllDateTime2: {
+        type: String,
+        default: function () {
+            return this.Date + "-" + this.Month + "-" + this.Year
+        }
+    },
 },
     {
         timestamps: true

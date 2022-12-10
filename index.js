@@ -9,6 +9,7 @@ const port = process.env.PORT || 5000
 var cors = require('cors');
 app.use(express.json(), cors());
 
+const moment = require('moment');
 // .................... DB Config .......................
 const DBConnection = () => {
     return mongoose.connect(process.env.CONNECTION_STRING, {
@@ -28,9 +29,17 @@ const GetData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const GetTwentyDataLatest = async (req, res) => {
+const GetDataLatest = async (req, res) => {
     try {
         const data = await (await ValuesModel.find().sort({ _id: -1 }).limit(80))
+        data.reverse()
+        res.json(data)
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+const GetYesterdayData = async (req, res) => {
+    yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
+    try {
+        const data = await (await ValuesModel.find({ AllDateTime2: { $lte: yesterday} }).sort({ _id: -1 }).limit(80))
         data.reverse()
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
@@ -162,7 +171,8 @@ const GetWeekData = async (req, res) => {
 //......................... APIs ........................
 app.post("/", AddData)  // Adding data through post metheod & body
 app.get("/", GetData)
-app.get("/latest", GetTwentyDataLatest)
+app.get("/latest", GetDataLatest)
+app.get("/yesterday", GetYesterdayData)
 app.get("/find/:id", FindData)
 app.get("/add", AddData_Query) // Adding data through get method & query
 app.delete("/delete/:id", DeleteData)
