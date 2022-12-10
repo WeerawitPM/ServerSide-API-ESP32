@@ -1,23 +1,22 @@
 const mongoose = require("mongoose");
 const ValuesSchema = new mongoose.Schema({
     Board_id: {},
-    Board_location: {},
-    Measurements: [
-        {
-            Temperature_C: {},
-            Temperature_F: {},
-            Humadity: {},
-            Day: {},
-            Date: {},
-            Month: {},
-            Year: {},
-            Time_Hours: {},
-            Time_Minutes: {},
-            Time_Seconds: {},
-            DateTime: {},
-            timestamp: { type: Date, default: Date.now }
+    Temperature_C: {},
+    Temperature_F: {},
+    Humadity: {},
+    Day: {},
+    Date: {},
+    Month: {},
+    Year: {},
+    Time_Hours: {},
+    Time_Minutes: {},
+    Time_Seconds: {},
+    AllDateTime: {
+        type: String,
+        default: function () {
+            return this.Day + " " + this.Date + " " + this.Month + " " + this.Year + " " + this.Time_Hours + ":" + this.Time_Minutes + ":" + this.Time_Seconds
         }
-    ],
+    },
 },
     {
         timestamps: true
