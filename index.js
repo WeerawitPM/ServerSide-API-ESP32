@@ -167,7 +167,7 @@ const GetDataMonthofYear = async (req, res) => {
                         _id: 0,
                         Temperature_C: 1,
                         Humadity: 1,
-                        Date: today2 = moment(today, 'MM-YYYY').format('MMMM')
+                        Date: today2 = moment(today, 'MM-YYYY').format('MMMM-YYYY')
                     }
                 }
             ])
