@@ -14,7 +14,7 @@ const ValuesSchema = new mongoose.Schema({
     AllDateTime: {
         type: String,
         default: function () {
-            return this.Day + " " + this.Date + " " + this.Month + " " + this.Year + " " + this.Time_Hours + ":" + this.Time_Minutes + ":" + this.Time_Seconds
+            return this.Date + "-" + this.Month + "-" + this.Year + "-" + this.Day + " " + this.Time_Hours + ":" + this.Time_Minutes + ":" + this.Time_Seconds
         }
     },
     AllDateTime2: {

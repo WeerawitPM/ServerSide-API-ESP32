@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const ValuesModel = require('./models/model_data');
+const BoardModel = require('./models/model_board');
+
 const app = express();
 
 require('dotenv').config();
@@ -336,17 +338,59 @@ const UpdateData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const MeanTemperatureToday = async (req, res) => {
+//................................................
+
+//.................. Board .........................
+
+const RegisterBoard = async (req, res) => {
+    let { Board_id, Board_Location } = req.body
     try {
-        const data = await ValuesModel.find()
-        let mean = 0
-        data.map((item) => {
-            mean += item.Temperature_C
-        })
-        mean = mean / data.length
-        res.json({ Message: "Mean Temperature Today", mean })
+        const data = await BoardModel.findOne({ Board_id })
+        if (data) {
+            res.json({ Message: "Board Already Registered" })
+        }
+        else {
+            const data = new BoardModel({ Board_id, Board_Location })
+            await data.save()
+            res.json({ Message: "Board Registered Success", data })
+        }
     } catch (error) { res.json({ Message: "Error", error }) }
 }
+
+const GetBoard = async (req, res) => {
+    try {
+        const data = await BoardModel.find()
+        res.json({ Message: "Board Found", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const FindBoard = async (req, res) => {
+    let Board_id = req.params.id
+    try {
+        const data = await BoardModel
+            .findOne({ Board_id })
+        res.json({ Message: "Board Found", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const DeleteBoard = async (req, res) => {
+    let Board_id = req.params.id
+    try {
+        const data = await BoardModel.findOneAndDelete({ Board_id })
+        res.json({ Message: "Board Deleted Success", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+const UpdateBoard = async (req, res) => {
+    let Board_id = req.params.id
+    let { Board_Location } = req.body
+    try {
+        const data = await BoardModel.findOneAndUpdate({ Board_id }, { Board_Location })
+        res.json({ Message: "Board Updated Success", data })
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
+
+//................................................
 
 //......................... APIs ........................
 app.post("/", AddData)  // Adding data through post metheod & body
@@ -355,13 +399,20 @@ app.get("/latest", GetDataLatest)
 app.get("/today", GetTodayData)
 app.get("/yesterday", GetYesterdayData)
 app.get("/week", GetWeekData)
-// app.get("/week", GetWeekData)
 app.get("/avg", GetAvgTemp)
 app.get("/avgtoday", GetAvgDataToday)
 app.get("/find/:id", FindData)
 app.get("/add", AddData_Query) // Adding data through get method & query
 app.delete("/delete/:id", DeleteData)
 app.put("/update/:id", UpdateData)
-app.get("/mean", MeanTemperatureToday)
+//................................................
+
+//......................... Board APIS ........................
+app.post("/board", RegisterBoard)
+app.get("/board", GetBoard)
+app.get("/board/:id", FindBoard)
+app.delete("/board/:id", DeleteBoard)
+app.patch("/board/:id", UpdateBoard)
+//................................................
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
