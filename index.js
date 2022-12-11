@@ -10,6 +10,7 @@ const port = process.env.PORT || 5000
 const moment = require('moment');
 
 var cors = require('cors');
+const { find } = require('./models/model_data');
 app.use(express.json(), cors());
 // .................... DB Config .......................
 const DBConnection = () => {
@@ -77,183 +78,105 @@ const GetAvgDataToday = async (req, res) => {
 
 const GetWeekData = async (req, res) => {
     today = moment().format('DD-MM-YYYY');
-    yesterday1 = moment().add(-1, 'days').format('DD-MM-YYYY');
-    yesterday2 = moment().add(-2, 'days').format('DD-MM-YYYY');
-    yesterday3 = moment().add(-3, 'days').format('DD-MM-YYYY');
-    yesterday4 = moment().add(-4, 'days').format('DD-MM-YYYY');
-    yesterday5 = moment().add(-5, 'days').format('DD-MM-YYYY');
-    yesterday6 = moment().add(-6, 'days').format('DD-MM-YYYY');
     data = []
     try {
-        const data1 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: today } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
+        for (let i = 0; i < 7; i++) {
+            const data1 = await ValuesModel.aggregate([
+                {
+                    $match: { AllDateTime2: { $lte: today } }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        Temperature_C: { $avg: "$Temperature_C" },
+                        Humadity: { $avg: "$Humadity" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        Temperature_C: 1,
+                        Humadity: 1,
+                        Date: today
+                    }
                 }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: today
-                }
-            }
-        ])
+            ])
+            data1.map((item) => {
+                data.push(item)
+            })
+            today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+        }
+        data.reverse()
+        res.json(data)
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
 
-        const data2 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday1 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
+const GetDataDateofMonth = async (req, res) => {
+    today = moment().format('DD-MM-YYYY');
+    data = []
+    try {
+        for (let i = 0; i < 30; i++) {
+            const data1 = await ValuesModel.aggregate([
+                {
+                    $match: { AllDateTime2: { $lte: today } }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        Temperature_C: { $avg: "$Temperature_C" },
+                        Humadity: { $avg: "$Humadity" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        Temperature_C: 1,
+                        Humadity: 1,
+                        Date: today
+                    }
                 }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: yesterday1
-                }
-            }
-        ])
+            ])
+            data1.map((item) => {
+                data.push(item)
+            })
+            today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+        }
+        data.reverse()
+        res.json(data)
+    } catch (error) { res.json({ Message: "Error", error }) }
+}
 
-        const data3 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday2 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
+const GetDataMonthofYear = async (req, res) => {
+    today = moment().format('MM-YYYY');
+    data = []
+    try {
+        for (let i = 0; i < 12; i++) {
+            const data1 = await ValuesModel.aggregate([
+                {
+                    $match: { Month : { $lte: today } , Year : { $gte: today } }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        Temperature_C: { $avg: "$Temperature_C" },
+                        Humadity: { $avg: "$Humadity" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        Temperature_C: 1,
+                        Humadity: 1,
+                        Date: today2 = moment(today, 'MM-YYYY').format('MMMM')
+                    }
                 }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: yesterday2
-                }
-            }
-        ])
-
-        const data4 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday3 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: yesterday3
-                }
-            }
-        ])
-
-        const data5 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday4 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" },
-                    Date: yesterday4
-                }
-            }
-        ])
-
-        const data6 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday5 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: yesterday5
-                }
-            }
-        ])
-
-        const data7 = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $lte: yesterday6 } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    Temperature_C: 1,
-                    Humadity: 1,
-                    Date: yesterday6
-                }
-            }
-        ])
-
-        data7.map((item) => {
-            data.push(item)
-        })
-        data6.map((item) => {
-            data.push(item)
-        })
-        data5.map((item) => {
-            data.push(item)
-        })
-        data4.map((item) => {
-            data.push(item)
-        })
-        data3.map((item) => {
-            data.push(item)
-        })
-        data2.map((item) => {
-            data.push(item)
-        })
-        data1.map((item) => {
-            data.push(item)
-        })
-
+            ])
+            data1.map((item) => {
+                data.push(item)
+            })
+            today = moment(today, 'MM-YYYY').add(-1, 'months').format('MM-YYYY');
+        }
+        data.reverse()
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
@@ -405,6 +328,8 @@ app.get("/find/:id", FindData)
 app.get("/add", AddData_Query) // Adding data through get method & query
 app.delete("/delete/:id", DeleteData)
 app.put("/update/:id", UpdateData)
+app.get("/month", GetDataDateofMonth)
+app.get("/year", GetDataMonthofYear)
 //................................................
 
 //......................... Board APIS ........................
