@@ -6,11 +6,12 @@ const BoardModel = require('./models/model_board');
 const app = express();
 
 require('dotenv').config();
+
 const port = process.env.PORT || 5000
 const moment = require('moment');
 
 var cors = require('cors');
-const { find } = require('./models/model_data');
+
 app.use(express.json(), cors());
 // .................... DB Config .......................
 const DBConnection = () => {
@@ -53,25 +54,6 @@ const GetTodayData = async (req, res) => {
     try {
         const data = await ValuesModel.find({ AllDateTime2: { $gte: today } })
         data.reverse()
-        res.json(data)
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const GetAvgDataToday = async (req, res) => {
-    today = moment().add(-1, "days").format('DD-MM-YYYY');
-    try {
-        const data = await ValuesModel.aggregate([
-            {
-                $match: { AllDateTime2: { $gte: today } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    Temperature_C: { $avg: "$Temperature_C" },
-                    Humadity: { $avg: "$Humadity" }
-                }
-            }
-        ])
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
@@ -177,20 +159,6 @@ const GetDataMonthofYear = async (req, res) => {
             today = moment(today, 'MM-YYYY').add(-1, 'months').format('MM-YYYY');
         }
         data.reverse()
-        res.json(data)
-    } catch (error) { res.json({ Message: "Error", error }) }
-}
-
-const GetAvgTemp = async (req, res) => {
-    try {
-        const data = await ValuesModel.aggregate([
-            {
-                $group: {
-                    _id: null,
-                    avg: { $avg: "$Temperature_C" }
-                },
-            }
-        ])
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
@@ -317,19 +285,17 @@ const UpdateBoard = async (req, res) => {
 
 //......................... APIs ........................
 app.post("/", AddData)  // Adding data through post metheod & body
+app.get("/add", AddData_Query) // Adding data through get method & query
 app.get("/", GetData)
 app.get("/latest", GetDataLatest)
 app.get("/today", GetTodayData)
 app.get("/yesterday", GetYesterdayData)
 app.get("/week", GetWeekData)
-app.get("/avg", GetAvgTemp)
-app.get("/avgtoday", GetAvgDataToday)
 app.get("/find/:id", FindData)
-app.get("/add", AddData_Query) // Adding data through get method & query
-app.delete("/delete/:id", DeleteData)
-app.put("/update/:id", UpdateData)
 app.get("/month", GetDataDateofMonth)
 app.get("/year", GetDataMonthofYear)
+app.delete("/delete/:id", DeleteData)
+app.patch("/update/:id", UpdateData)
 //................................................
 
 //......................... Board APIS ........................
