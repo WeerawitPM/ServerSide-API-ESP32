@@ -58,14 +58,15 @@ const GetTodayData = async (req, res) => {
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const GetWeekData = async (req, res) => {
-    today = moment().format('DD-MM-YYYY');
+const GetCurrentWeekData = async (req, res) => {
+    startOfWeek = moment().startOf('week').format('DD-MM-YYYY');
+    endOfWeek = moment().endOf('week').format('DD-MM-YYYY');
     data = []
     try {
         for (let i = 0; i < 7; i++) {
             const data1 = await ValuesModel.aggregate([
                 {
-                    $match: { AllDateTime2: { $lte: today } }
+                    $match: { AllDateTime2: { $gte: startOfWeek, $lte: endOfWeek } }
                 },
                 {
                     $group: {
@@ -79,28 +80,28 @@ const GetWeekData = async (req, res) => {
                         _id: 0,
                         Temperature_C: 1,
                         Humadity: 1,
-                        Date: today
+                        Date: startOfWeek
                     }
                 }
             ])
             data1.map((item) => {
                 data.push(item)
             })
-            today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+            startOfWeek = moment(startOfWeek, 'DD-MM-YYYY').add(1, 'days').format('DD-MM-YYYY');
         }
-        data.reverse()
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const GetDataDateofMonth = async (req, res) => {
-    today = moment().format('DD-MM-YYYY');
+const GetCurrentMonthData = async (req, res) => {
+    startOfMonth = moment().startOf('month').format('DD-MM-YYYY');
+    endOfMonth = moment().endOf('month').format('DD-MM-YYYY');
     data = []
     try {
         for (let i = 0; i < 30; i++) {
             const data1 = await ValuesModel.aggregate([
                 {
-                    $match: { AllDateTime2: { $lte: today } }
+                    $match: { AllDateTime2: { $gte: startOfMonth, $lte: endOfMonth } }
                 },
                 {
                     $group: {
@@ -114,28 +115,28 @@ const GetDataDateofMonth = async (req, res) => {
                         _id: 0,
                         Temperature_C: 1,
                         Humadity: 1,
-                        Date: today
+                        Date: startOfMonth
                     }
                 }
             ])
             data1.map((item) => {
                 data.push(item)
             })
-            today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+            startOfMonth = moment(startOfMonth, 'DD-MM-YYYY').add(1, 'days').format('DD-MM-YYYY');
         }
-        data.reverse()
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
 
-const GetDataMonthofYear = async (req, res) => {
-    today = moment().format('MM-YYYY');
+const GetCurrentYearData = async (req, res) => {
+    startOfYear = moment().startOf('year').format('DD-MM-YYYY');
+    endOfYear = moment().endOf('year').format('DD-MM-YYYY');
     data = []
     try {
         for (let i = 0; i < 12; i++) {
             const data1 = await ValuesModel.aggregate([
                 {
-                    $match: { Month : { $lte: today } , Year : { $gte: today } }
+                    $match: { AllDateTime2: { $gte: startOfYear, $lte: endOfYear } }
                 },
                 {
                     $group: {
@@ -149,19 +150,123 @@ const GetDataMonthofYear = async (req, res) => {
                         _id: 0,
                         Temperature_C: 1,
                         Humadity: 1,
-                        Date: today2 = moment(today, 'MM-YYYY').format('MMMM-YYYY')
+                        Date: startOfYear2 = moment(startOfYear, 'DD-MM-YYYY').format('MMMM')
                     }
                 }
             ])
             data1.map((item) => {
                 data.push(item)
             })
-            today = moment(today, 'MM-YYYY').add(-1, 'months').format('MM-YYYY');
+            startOfYear = moment(startOfYear, 'DD-MM-YYYY').add(1, 'months').format('DD-MM-YYYY');
         }
-        data.reverse()
         res.json(data)
     } catch (error) { res.json({ Message: "Error", error }) }
 }
+
+// const GetWeekData = async (req, res) => {
+//     today = moment().format('DD-MM-YYYY');
+//     data = []
+//     try {
+//         for (let i = 0; i < 7; i++) {
+//             const data1 = await ValuesModel.aggregate([
+//                 {
+//                     $match: { AllDateTime2: { $lte: today } }
+//                 },
+//                 {
+//                     $group: {
+//                         _id: null,
+//                         Temperature_C: { $avg: "$Temperature_C" },
+//                         Humadity: { $avg: "$Humadity" }
+//                     }
+//                 },
+//                 {
+//                     $project: {
+//                         _id: 0,
+//                         Temperature_C: 1,
+//                         Humadity: 1,
+//                         Date: today
+//                     }
+//                 }
+//             ])
+//             data1.map((item) => {
+//                 data.push(item)
+//             })
+//             today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+//         }
+//         data.reverse()
+//         res.json(data)
+//     } catch (error) { res.json({ Message: "Error", error }) }
+// }
+
+// const GetDataDateofMonth = async (req, res) => {
+//     today = moment().format('DD-MM-YYYY');
+//     data = []
+//     try {
+//         for (let i = 0; i < 30; i++) {
+//             const data1 = await ValuesModel.aggregate([
+//                 {
+//                     $match: { AllDateTime2: { $lte: today } }
+//                 },
+//                 {
+//                     $group: {
+//                         _id: null,
+//                         Temperature_C: { $avg: "$Temperature_C" },
+//                         Humadity: { $avg: "$Humadity" }
+//                     }
+//                 },
+//                 {
+//                     $project: {
+//                         _id: 0,
+//                         Temperature_C: 1,
+//                         Humadity: 1,
+//                         Date: today
+//                     }
+//                 }
+//             ])
+//             data1.map((item) => {
+//                 data.push(item)
+//             })
+//             today = moment(today, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-YYYY');
+//         }
+//         data.reverse()
+//         res.json(data)
+//     } catch (error) { res.json({ Message: "Error", error }) }
+// }
+
+// const GetDataMonthofYear = async (req, res) => {
+//     today = moment().format('MM-YYYY');
+//     data = []
+//     try {
+//         for (let i = 0; i < 12; i++) {
+//             const data1 = await ValuesModel.aggregate([
+//                 {
+//                     $match: { Month : { $lte: today } , Year : { $gte: today } }
+//                 },
+//                 {
+//                     $group: {
+//                         _id: null,
+//                         Temperature_C: { $avg: "$Temperature_C" },
+//                         Humadity: { $avg: "$Humadity" }
+//                     }
+//                 },
+//                 {
+//                     $project: {
+//                         _id: 0,
+//                         Temperature_C: 1,
+//                         Humadity: 1,
+//                         Date: today2 = moment(today, 'MM-YYYY').format('MMMM-YYYY')
+//                     }
+//                 }
+//             ])
+//             data1.map((item) => {
+//                 data.push(item)
+//             })
+//             today = moment(today, 'MM-YYYY').add(-1, 'months').format('MM-YYYY');
+//         }
+//         data.reverse()
+//         res.json(data)
+//     } catch (error) { res.json({ Message: "Error", error }) }
+// }
 
 const FindData = async (req, res) => {
     let _id = req.params.id
@@ -287,13 +392,13 @@ const UpdateBoard = async (req, res) => {
 app.post("/", AddData)  // Adding data through post metheod & body
 app.get("/add", AddData_Query) // Adding data through get method & query
 app.get("/", GetData)
+app.get("/find/:id", FindData)
 app.get("/latest", GetDataLatest)
 app.get("/today", GetTodayData)
 app.get("/yesterday", GetYesterdayData)
-app.get("/week", GetWeekData)
-app.get("/find/:id", FindData)
-app.get("/month", GetDataDateofMonth)
-app.get("/year", GetDataMonthofYear)
+app.get("/week", GetCurrentWeekData)
+app.get("/month", GetCurrentMonthData)
+app.get("/year", GetCurrentYearData)
 app.delete("/delete/:id", DeleteData)
 app.patch("/update/:id", UpdateData)
 //................................................
